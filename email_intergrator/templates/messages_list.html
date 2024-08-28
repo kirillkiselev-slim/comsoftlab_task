@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages List</title>
+    <style>
+        /* Basic styles for the progress bar and table */
+        #progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4caf50;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+
+        #progress-stage {
+            position: absolute;
+            left: 50%;
+            top: 5px;
+            transform: translateX(-50%);
+            color: black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+        <span id="progress-stage">Starting...</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Date Sent</th>
+                <th>Date Received</th>
+                <th>Email Body</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Messages will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        let socket = new WebSocket('ws://' + window.location.host + '/ws/progress/');
+
+        socket.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+            let stage = data['stage'];
+            let progress = data['progress'];
+
+            // Update progress bar and stage text
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('progress-stage').textContent = stage;
+        };
+
+        socket.onclose = function(e) {
+            console.error('WebSocket closed unexpectedly');
+        };
+    </script>
+</body>
+</html>
